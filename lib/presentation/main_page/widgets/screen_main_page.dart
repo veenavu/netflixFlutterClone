@@ -16,8 +16,8 @@ class ScreenMainPage extends StatelessWidget {
       ScreenNewAndHot(),
       ScreenFastLaugh(),
       ScreenSearch(),
-      //ScreenDownloads(),
-      NetflixHomePage(),
+      ScreenDownloads(),
+      //NetflixHomePage(),
     ];
 
   @override
