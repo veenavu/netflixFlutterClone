@@ -1,17 +1,17 @@
 import 'dart:convert';
 
+
 import 'package:http/http.dart' as http;
-import 'package:netflixclone/core/constants/constants.dart';
 
-import '../models/movies.dart';
-
+import '../core/constants.dart';
+import '../models/movie.dart';
 
 class ApiService {
   static const _topRatedUrl = 'https://api.themoviedb.org/3/movie/top_rated?api_key=${Constants.apiKey}';
   static const _trandingUrl ='https://api.themoviedb.org/3/movie/popular?api_key=${Constants.apiKey}';
   static const _dramaUrl ='https://api.themoviedb.org/3/discover/tv?api_key=${Constants.apiKey}';
-  static const _southIndiaUrl = "https://api.themoviedb.org/3/discover/tv?api_key=${Constants.apiKey}&with_original_language=hi&sort_by=popularity.desc";
-  static const _top10ShowUrl ="https://api.themoviedb.org/3/discover/tv?api_key=${Constants.apiKey}";
+  static final _southIndiaUrl = "https://api.themoviedb.org/3/discover/tv?api_key=${Constants.apiKey}&with_original_language=hi&sort_by=popularity.desc";
+  static final _top10ShowUrl ="https://api.themoviedb.org/3/discover/tv?api_key=${Constants.apiKey}";
   static const _upcommingUrl ="https://api.themoviedb.org/3/tv/top_rated?api_key=${Constants.apiKey}&with_original_language=hi&sort_by=popularity.desc";
   static const _upcommingUrl2 ="https://api.themoviedb.org/3/tv/popular?api_key=${Constants.apiKey}&with_original_language=hi&sort_by=popularity.desc";
   static const _commingsoon1 ="https://api.themoviedb.org/3/tv/on_the_air?api_key=${Constants.apiKey}&with_original_language=hi&sort_by=popularity.desc";
@@ -67,8 +67,8 @@ class ApiService {
     }
   }
 
-  Future<List<Movie>> upcommingMovie() async {
-    //after the uri.parse to convert the object to response value is like stauscode header and body
+    Future<List<Movie>> upcommingMovie() async {
+      //after the uri.parse to convert the object to response value is like stauscode header and body
     final response = await http.get(Uri.parse(_upcommingUrl));
     if (response.statusCode == 200) {
       //Parses the JSON string in the response body into a Dart object.
@@ -78,11 +78,11 @@ class ApiService {
       throw Exception('Failed to load top-rated movies. Status Code: ${response.statusCode}');
     }
   }
+  
 
 
 
-
-  Future<List<Movie>> fetchAllMovies() async {
+   Future<List<Movie>> fetchAllMovies() async {
     try {
       final responses = await Future.wait([
         http.get(Uri.parse(_upcommingUrl2)),
@@ -114,7 +114,7 @@ class ApiService {
     }
   }
 
-  Future<List<Movie>> fetchAllCommingMovie() async {
+     Future<List<Movie>> fetchAllCommingMovie() async {
     try {
       final responses = await Future.wait([
         http.get(Uri.parse(_commingsoon2)),
@@ -145,18 +145,22 @@ class ApiService {
       throw Exception('Failed to fetch all movies: $e');
     }
   }
-  Future<List<Movie>> searchResult(String movie) async {
-    if (movie.trim().isEmpty) {
-      return [];
-    }
-    String resultApi = "https://api.themoviedb.org/3/search/movie?api_key=${Constants.apiKey}&query=$movie";
+Future<List<Movie>> searchResult(String movie) async {
+  if (movie.trim().isEmpty) {
+    return []; 
+  }
+  String resultApi = "https://api.themoviedb.org/3/search/movie?api_key=${Constants.apiKey}&query=$movie";
 
-    final response = await http.get(Uri.parse(resultApi));
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body)["results"] as List;
-      return responseData.map((movie) => Movie.formJson(movie)).toList();
-    } else {
-      throw Exception('Something went wrong');
-    }
+  final response = await http.get(Uri.parse(resultApi));
+  if (response.statusCode == 200) {
+    final responseData = jsonDecode(response.body)["results"] as List;
+    return responseData.map((movie) => Movie.formJson(movie)).toList();
+  } else {
+    throw Exception('Something went wrong');
   }
 }
+}
+
+
+
+

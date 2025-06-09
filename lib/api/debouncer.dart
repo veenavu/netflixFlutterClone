@@ -1,14 +1,15 @@
 import 'dart:async';
 
 class Debouncer {
-  final Duration delay;
+   final Duration delay;
 
-  Timer? _timer;
+   Timer? _timer;
 
-  Debouncer({required this.delay});
+   Debouncer({required this.delay});
 
-  void call(Function() action){
+   void call(Function() action){
     _timer?.cancel();
     _timer = Timer(delay, action);
-  }
+   }
 }
+
