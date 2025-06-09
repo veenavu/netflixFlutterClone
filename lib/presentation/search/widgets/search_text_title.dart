@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:netflixclone/core/colors/colors.dart';
 
@@ -8,17 +9,15 @@ class SearchTextTitle extends StatelessWidget {
   final String title;
   const SearchTextTitle({
     super.key,
-    required this.title,
+    required this.title
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: TextStyle(
-          color: KWhiteColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 16),
+      style:
+      GoogleFonts.montserrat(fontSize: 23, fontWeight: FontWeight.bold),
     );
   }
 }

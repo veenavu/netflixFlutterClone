@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import '../../core/colors/colors.dart';
-class MainTitle extends StatelessWidget {
-  const MainTitle({super.key, required this.title});
+
+
+class MainTitleWidget extends StatelessWidget {
   final String title;
+  const MainTitleWidget({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: TextStyle(
-          color: KWhiteColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 16),
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title,
+        style:
+        GoogleFonts.montserrat(fontSize: 21, fontWeight: FontWeight.bold),
+      ),
     );
   }
 }

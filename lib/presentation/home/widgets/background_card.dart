@@ -1,105 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/constants/constants.dart';
 
-class BackgroundCard extends StatelessWidget {
-  const BackgroundCard({Key? key}) : super(key: key);
+import '../../widgets/custom_button_widget.dart';
+
+class BackgroundImage extends StatelessWidget {
+  const BackgroundImage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final Size displaysize = MediaQuery.of(context).size;
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          height: 600,
+          height: displaysize.width * 1.63,
           decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/rktDFPbfHfUbArZ6OOOKsXcv0Bm.jpg",
-              ),
-              fit: BoxFit.cover,
-            ),
-          ),
+              image: DecorationImage(
+                  fit: BoxFit.cover, image: NetworkImage(mainImage))),
         ),
         Positioned(
-          bottom: 0,
+          bottom: -4,
           left: 0,
           right: 0,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _PlayButton(),
-                _ActionButton(
-                  title: 'My List',
-                  icon: Icons.add,
-                ),
-                _ActionButton(
-                  title: 'Info',
-                  icon: Icons.info_outline,
-                ),
-              ],
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const CustomButtonWidget(icon: Icons.add, title: 'My List'),
+              _PlayButtonWidget(),
+              const CustomButtonWidget(icon: Icons.info_outlined, title: 'Info')
+            ],
           ),
-        ),
+        )
       ],
     );
   }
 }
 
-class _PlayButton extends StatelessWidget {
+
+
+class _PlayButtonWidget extends StatelessWidget {
+  const _PlayButtonWidget();
+
   @override
   Widget build(BuildContext context) {
     return TextButton.icon(
       onPressed: () {},
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(Colors.white),
-      ),
-      icon: const Icon(
+      icon: Icon(
         Icons.play_arrow,
-        size: 25,
         color: Colors.black,
+        size: 30,
       ),
-      label: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10),
+      label: Padding(
+        padding: const EdgeInsets.only(right: 9.0),
         child: Text(
-          'Play',
-          style: TextStyle(
-            fontSize: 20,
+          "Play",
+          style: GoogleFonts.roboto(
             color: Colors.black,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
+      ),
+      style: ButtonStyle(
+        // ignore: deprecated_member_use
+        backgroundColor: WidgetStateProperty.all(Colors.white.withOpacity(0.9)),
+        padding: WidgetStateProperty.all(
+          EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+        ),
+        shape: WidgetStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ),
     );
   }
 }
-
-class _ActionButton extends StatelessWidget {
-  final String title;
-  final IconData icon;
-
-  const _ActionButton({
-    Key? key,
-    required this.title,
-    required this.icon,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(
-          icon,
-          color: Colors.white,
-          size: 30,
-        ),
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
-      ],
-    );
-  }
-} 

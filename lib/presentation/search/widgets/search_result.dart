@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:netflixclone/core/constants/constants.dart';
-import 'package:netflixclone/presentation/search/widgets/titile.dart';
+import 'package:netflixclone/presentation/search/widgets/search_text_title.dart';
 
-import 'package:netflixclone/presentation/widgets/main_card.dart';
-
-const imageURL='https://image.tmdb.org/t/p/w1280/juA4IWO52Fecx8lhAsxmDgy3M3.jpg';
+import '../../../api/api.dart';
+import '../../../core/colors/colors.dart';
+import '../../../core/constants/constants.dart';
+import '../../../models/movies.dart';
 
 class SearchResultWidget extends StatelessWidget {
-  const SearchResultWidget({super.key});
+  final String result;
+  const SearchResultWidget({super.key, required this.result});
 
   @override
   Widget build(BuildContext context) {
@@ -15,35 +16,63 @@ class SearchResultWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SearchTextTitle(title: 'Movies & TV'),
-        KHeight,
+        hight,
         Expanded(
-          child: GridView.count(
-            mainAxisSpacing: 8 ,
-
-            shrinkWrap: true,
-            crossAxisSpacing: 8,
-            crossAxisCount: 3,
-            childAspectRatio: 1/1.4,
-            children: List.generate(20, (index) {
-              return const MainCard();
-            }),
-          ),
-        ),
+            child: FutureBuilder(
+              future:ApiService().searchResult(result) ,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: red,
+                      backgroundColor: black,
+                    ),
+                  );
+                } else if(snapshot.hasError){
+                  return const Center(
+                    child: Text('Error Loading data ⚠️',style: TextStyle(color: white),),
+                  );
+                } else if(!snapshot.hasData || snapshot.data!.isEmpty){
+                  return const Center(
+                    child: Text('No Data Found ⁉️',style: TextStyle(color: red),),
+                  );
+                }else{
+                  return GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 1/1.4,
+                    ),
+                    itemBuilder:(context, index) {
+                      var data = snapshot.data![index];
+                      return MainCardWidget(
+                        movie: data,
+                      );
+                    },
+                  );
+                }
+              },
+            ))
       ],
     );
   }
 }
-//
-// class MainCard extends StatelessWidget {
-//   const MainCard({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       decoration: BoxDecoration(
-//         image: DecorationImage(image: NetworkImage(imageURL),fit: BoxFit.cover),
-//         borderRadius: BorderRadius.circular(7),
-//       ),
-//     );
-//   }
-// }
+
+class MainCardWidget extends StatelessWidget {
+  final Movie movie;
+  const MainCardWidget(
+      {super.key, required this.movie, });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          image:  DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage(
+                '${Constants.imagePath}${movie.poseterPath}',
+              ))),
+    );
+  }
+}

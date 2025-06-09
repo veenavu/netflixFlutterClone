@@ -1,89 +1,69 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:netflixclone/presentation/fast_laugh/widgets/video_emotion.dart';
+
+import '../../../core/colors/colors.dart';
+import '../../../core/constants/constants.dart';
+
 class VideoListItem extends StatelessWidget {
+  final AsyncSnapshot snapshot;
   final int index;
-  const VideoListItem({super.key, required this.index});
+  const VideoListItem({super.key,required this.index,required this.snapshot});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
-          color: Colors.accents[index%Colors.accents.length],
+          decoration: BoxDecoration(
+              borderRadius: kRadius9,
+              image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: NetworkImage(
+                    '${Constants.imagePath}${snapshot.data[index].poseterPath}',
+
+                  ))
+          ),
         ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Padding
-            (
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                //left side
+                //*Left side portion
                 CircleAvatar(
-                  radius: 30,
-                backgroundColor: Colors.black.withOpacity(0.5),
-                child: IconButton(onPressed: (){}, icon: Icon(Icons.volume_off, color: Colors.white,size: 30,),)
-                ),
+                  // ignore: deprecated_member_use
+                    backgroundColor: Colors.black.withOpacity(0.6),
+                    radius: 30,
+                    child: IconButton(onPressed: (){}, icon: Icon(Icons.volume_off,color: white,))),
 
-                //right side
+                //*Right side portion
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage('https://image.tmdb.org/t/p/w1280/juA4IWO52Fecx8lhAsxmDgy3M3.jpg'),
-
+                        radius: 24,
+                        backgroundImage: NetworkImage('${Constants.imagePath}${snapshot.data[index].backDropPath}'),
                       ),
                     ),
+                    VideoEmotionsActions(icon: Icons.emoji_emotions, title: 'LOL'),
+                    VideoEmotionsActions(icon: CupertinoIcons.add, title: 'My List'),
+                    VideoEmotionsActions(icon: Icons.share, title: 'Share'),
+                    VideoEmotionsActions(icon: Icons.play_arrow, title: 'Play'),
 
-                    VideoActionWidget(icon: Icons.emoji_emotions, title: 'Lol'),
-                    VideoActionWidget(icon: Icons.add, title: 'My List'),
-                    VideoActionWidget(icon: Icons.share, title: 'Share'),
-                    VideoActionWidget(icon: Icons.play_arrow, title: 'Play'),
+
                   ],
-                ),
-              ],
-            ),
+                )
+              ],),
           ),
-        ),
+        )
       ],
     );
   }
 }
-
-
-class VideoActionWidget extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  const VideoActionWidget({super.key, required this.icon, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            color: Colors.white,
-            size: 30,
-          ),
-          Text(
-            title,
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 14
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-

@@ -2,43 +2,75 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:netflixclone/core/colors/colors.dart';
 import 'package:netflixclone/core/constants/constants.dart';
-import 'package:netflixclone/presentation/search/widgets/titile.dart';
+import 'package:netflixclone/presentation/search/widgets/search_text_title.dart';
+
+import '../../../api/api.dart';
+import '../../../models/movies.dart';
 
 const imageUrl = 'https://media.themoviedb.org/t/p/w710_and_h400_multi_faces/wHNwlE6ftEpgjVbdhLXOtv1hLs0.jpg';
 
-class SearchIdleWidget extends StatelessWidget {
+class SearchIdleWidget extends StatefulWidget {
   const SearchIdleWidget({super.key});
 
   @override
+  State<SearchIdleWidget> createState() => _SearchIdleWidgetState();
+}
+
+class _SearchIdleWidgetState extends State<SearchIdleWidget> {
+  late Future<List<Movie>> searchList;
+
+  @override
+  void initState() {
+    super.initState();
+    searchList = ApiService().dramaMovie();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var children = [
+      const SearchTextTitle(
+        title: 'Top Search',
+      ),
+      hight,
+      Expanded(
+          child: FutureBuilder(
+            future: searchList,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: red,
+                    backgroundColor: black,
+                  ),
+                );
+              } else if (snapshot.hasData) {
+                return ListView.separated(
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) => TopSearchItemIdle(snapshot: snapshot,index: index,),
+                    separatorBuilder: (context, index) => khight18,
+                    itemCount: 20);
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: red,
+                    backgroundColor: black,
+                  ),
+                );
+              }
+            },
+          ))
+    ];
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          KHeight,
-          Text(
-              'Top Searches',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold
-              ),
-          ),
-          KHeight,
-          Expanded(
-              child: ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) => TopSearchItemTile(),
-                  separatorBuilder: (context, index) => KHeight20,
-                  itemCount: 10,
-              ),
-          ),
-        ],
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
     );
   }
 }
 
-class TopSearchItemTile extends StatelessWidget {
-  const TopSearchItemTile({super.key});
+class TopSearchItemIdle extends StatelessWidget {
+  final AsyncSnapshot snapshot;
+  final int index;
+  const TopSearchItemIdle({super.key, required this.snapshot, required this.index,});
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +78,36 @@ class TopSearchItemTile extends StatelessWidget {
     return Row(
       children: [
         Container(
-            width: screenWidth * 0.35,
-            height: 65,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage(imageUrl),
-                    fit: BoxFit.cover,
-                ),
-
-                borderRadius: BorderRadius.circular(5),
+          width: screenWidth * 0.35,
+          height: 66,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.cover,
+              image: NetworkImage(
+                '${Constants.imagePath}${snapshot.data[index].poseterPath}',
+              ),
             ),
+          ),
         ),
+        width,
         Expanded(
-            child: SearchTextTitle(
-                title: 'Movie Name',
+            child: Text(
+              '${snapshot.data[index].originalTitile}',
+              style: TextStyle(
+                  color: white, fontWeight: FontWeight.bold, fontSize: 16),
+            )),
+        const CircleAvatar(
+          backgroundColor: white,
+          radius: 24,
+          child: CircleAvatar(
+            backgroundColor: black,
+            radius: 23.4,
+            child: Icon(
+              CupertinoIcons.play_arrow_solid,
+              color: white,
             ),
-        ),
-        //Icon(CupertinoIcons.play_fill,color: KWhiteColor,),
-        CircleAvatar(
-            radius: 25,
-            backgroundColor: KWhiteColor,
-            child: CircleAvatar(
-                radius: 23,
-                backgroundColor: backgroundColor,
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 5),
-                    child: Icon(
-                        CupertinoIcons.play_fill,
-                        color: KWhiteColor),
-                ),
-            ),
-        ),
+          ),
+        )
       ],
     );
   }

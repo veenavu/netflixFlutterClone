@@ -1,53 +1,43 @@
 import 'package:flutter/material.dart';
-
-class NumberCard extends StatelessWidget {
+import 'package:google_fonts/google_fonts.dart';
+import 'package:bordered_text/bordered_text.dart';
+import '../../../core/colors/colors.dart';
+import '../../../core/constants/constants.dart';
+class NumberCardWidget extends StatelessWidget {
   final int index;
-  const NumberCard({
-    Key? key,
-    required this.index,
-  }) : super(key: key);
+  final AsyncSnapshot snapshot;
+  const NumberCardWidget({super.key,required this.index,required this.snapshot});
 
   @override
   Widget build(BuildContext context) {
+    final Size displaysize = MediaQuery.of(context).size;
     return Stack(
       children: [
         Row(
           children: [
-            const SizedBox(width: 40),
+            SizedBox(height: 160, width: displaysize.width*0.08,),
             Container(
-              width: 150,
-              height: 250,
+              width: displaysize.width*0.32,
+              height: 160,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(
-                    "https://www.themoviedb.org/t/p/w600_and_h900_bestv2/rktDFPbfHfUbArZ6OOOKsXcv0Bm.jpg",
-                  ),
-                ),
+                  borderRadius: kRadius9,
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(
+                        '${Constants.imagePath}${snapshot.data[index].poseterPath}',
+                      ))
               ),
             ),
           ],
         ),
+
         Positioned(
-          left: 13,
-          bottom: -20,
-          child: Text(
-            '${index + 1}',
-            style: const TextStyle(
-              fontSize: 120,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              shadows: [
-                Shadow(
-                  color: Colors.white,
-                  offset: Offset(2, 2),
-                  blurRadius: 2,
-                ),
-              ],
-            ),
-          ),
-        ),
+            left: -10,
+            bottom: -15,
+            child: BorderedText(
+                strokeColor: white,
+                strokeWidth: 2.0,
+                child: Text("${index+1}",style: GoogleFonts.roboto(fontSize: 115, decoration: TextDecoration.none, color: Colors.transparent,fontWeight: FontWeight.bold, )))),
       ],
     );
   }

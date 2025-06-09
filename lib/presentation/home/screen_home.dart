@@ -1,110 +1,153 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:netflixclone/core/colors/colors.dart';
-import 'package:netflixclone/presentation/home/widgets/number_title_card.dart';
-import 'package:netflixclone/presentation/widgets/main_title_card.dart';
+import 'package:netflixclone/presentation/home/widgets/animated_container.dart';
+import 'package:netflixclone/presentation/home/widgets/main_title_card.dart';
+import 'package:netflixclone/presentation/home/widgets/number_title_widget.dart';
 
-import '../widgets/main_card.dart';
+
+import '../../api/api.dart';
+import '../../core/constants/constants.dart';
+
+import '../../models/movies.dart';
+import '../widgets/main_card_widget.dart';
 import 'widgets/background_card.dart';
 
-class ScreenHome extends StatelessWidget {
-  const ScreenHome({Key? key}) : super(key: key);
+ValueNotifier<bool> scrollNOtifier = ValueNotifier<bool>(true);
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<Movie>> topMovies;
+  late Future<List<Movie>> trandingMovie;
+  late Future<List<Movie>> dramaMovie;
+  late Future<List<Movie>> southIndianMovie;
+  late Future<List<Movie>> top10show;
+
+  @override
+  void initState(){
+    super.initState();
+    topMovies = ApiService().fetchAllCommingMovie();
+    trandingMovie = ApiService().topMovies();
+    dramaMovie = ApiService().dramaMovie();
+    southIndianMovie = ApiService().southIndiaMovie();
+    top10show = ApiService().top10TvShow();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                BackgroundCard(),
-                MainTitleCard(
-                  title: "Released in the Past Year",
-                ),
-                MainTitleCard(
-                  title: "Trending Now",
-                ),
-                NumberTitleCard(),
-                MainTitleCard(
-                  title: "Tense Dramas",
-                ),
-                MainTitleCard(
-                  title: "South Indian Cinema",
-                ),
-              ],
-            ),
-            AnimatedContainer(
-              duration: Duration(milliseconds: 1000),
-              child: Container(
-                width: double.infinity,
-                height: 90,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.8),
-                      Colors.black.withOpacity(0.0),
-                    ],
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Row(
+    return ValueListenableBuilder(
+      valueListenable: scrollNOtifier,
+      builder: (BuildContext context, value, child) {
+        return NotificationListener<UserScrollNotification>(
+          onNotification: (notification) {
+            final ScrollDirection direction = notification.direction;
+            if (direction == ScrollDirection.reverse) {
+              scrollNOtifier.value = false;
+            } else if (direction == ScrollDirection.forward) {
+              scrollNOtifier.value = true;
+            }
+            return true;
+          },
+          child: Stack(
+            children: [
+              ListView(
+                children: [
+                  BackgroundImage(),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
                       children: [
-                        Image.network(
-                          "https://cdn-images-1.medium.com/max/1200/1*ty4NvNrGg4ReETxqU2N3Og.png",
-                          width: 50,
-                          height: 50,
-                        ),
-                        const Spacer(),
-                        const Icon(
-                          Icons.cast,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          color: Colors.blue,
-                        ),
-                        SizedBox(width: 10),
+                        hight,
+                        FutureBuilder(future: topMovies,
+                          builder: (context, snapshot){
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                              );
+                            } else if(snapshot.hasData){
+                              return   MainTitleCardWidget(
+                                title: "Relesed in the Past Year",snapshot: snapshot,
+                              );
+                            }else{
+                              return Center(
+                                child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                              );
+                            }
+                          },),
+                        FutureBuilder(future: trandingMovie, builder: (context, snapshot){
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }else if(snapshot.hasData){
+                            return MainTitleCardWidget(
+                                title: "Tense Dramas", snapshot: snapshot);
+                          }else{
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }
+                        }
+                          ,) ,hight,
+                        FutureBuilder(future: top10show, builder: (context, snapshot){
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }else if(snapshot.hasData){
+                            return NumberTitleCard(snapshot: snapshot,);
+                          }else{
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }
+                        }
+                          ,) ,
+                        FutureBuilder(future: dramaMovie, builder: (context, snapshot) {
+                          if (snapshot.hasError){
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }else if(snapshot.hasData){
+                            return MainTitleCardWidget(
+                                title: "Trending Now", snapshot: snapshot);
+                          }else{
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }
+                        },),hight,
+                        FutureBuilder(future: southIndianMovie, builder: (context, snapshot) {
+                          if (snapshot.hasError){
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }else if(snapshot.hasData){
+                            return MainTitleCardWidget(
+                                title: "South Indian Cinema", snapshot: snapshot);
+                          }else{
+                            return Center(
+                              child: CircularProgressIndicator(color:red,backgroundColor: black,),
+                            );
+                          }
+                        },),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          "TV Shows",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Movies",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "Categories",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  )
+                ],
               ),
-            ),
-          ],
-        ),
-      ),
+              scrollNOtifier.value == true
+                  ? CustomAnimatedCotainer()
+                  : hight
+            ],
+          ),
+        );
+      },
     );
   }
 }
