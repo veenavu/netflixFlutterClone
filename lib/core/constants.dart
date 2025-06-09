@@ -29,6 +29,6 @@ TextStyle kHomeTitleText = GoogleFonts.roboto(
 
 //Api key
 class Constants {
-  static const apiKey = "55f7030edc86e5f4566cabcd1b6be892";
+  static const apiKey = "8298e9ee681622858e3bc8749a12f6e4";
   static const imagePath = "https://image.tmdb.org/t/p/w500";
 }
